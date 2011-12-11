@@ -4,6 +4,7 @@
 
 package com.link093.mineconnect;
 
+import java.awt.RenderingHints.Key;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
@@ -11,6 +12,7 @@ import org.jdesktop.application.FrameView;
 import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JDialog;
@@ -101,6 +103,11 @@ public class MineconnectclientView extends FrameView {
 
         jTextField2.setText(resourceMap.getString("jTextField2.text")); // NOI18N
         jTextField2.setName("jTextField2"); // NOI18N
+        jTextField2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextField2KeyPressed(evt);
+            }
+        });
 
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
         jButton1.setName("jButton1"); // NOI18N
@@ -181,6 +188,15 @@ public class MineconnectclientView extends FrameView {
 private void jMenuItem1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem1MouseClicked
 
 }//GEN-LAST:event_jMenuItem1MouseClicked
+
+private void jTextField2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyPressed
+      
+    
+    if (evt.getKeyCode() == KeyEvent.VK_ENTER) {        
+        jTextArea1.setText(jTextArea1.getText() + System.getProperty("line.separator") + jTextField2.getText());
+        jTextField2.setText("");        
+    }
+}//GEN-LAST:event_jTextField2KeyPressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

@@ -19,7 +19,7 @@ public class Connecter extends javax.swing.JFrame {
     /** Creates new form Connecter */
     public Connecter() {
         initComponents();
-    }
+    }        
 
     /** This method is called from within the constructor to
      * initialize the form.
