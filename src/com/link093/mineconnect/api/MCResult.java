@@ -9,5 +9,5 @@ package com.link093.mineconnect.api;
  * @author prosicraft
  */
 public enum MCResult {
-    RES_ERROR, RES_NOACCESS, RES_SUCCESS, RES_NOTINIT
+    RES_ERROR, RES_NOACCESS, RES_SUCCESS, RES_NOTINIT, RES_ALREADY
 }
