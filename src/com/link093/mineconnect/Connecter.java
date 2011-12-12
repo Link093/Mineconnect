@@ -1,5 +1,7 @@
 package com.link093.mineconnect;
 
+import com.link093.mineconnect.api.MCInterface;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -16,10 +18,28 @@ package com.link093.mineconnect;
  */
 public class Connecter extends javax.swing.JFrame {
 
+    private MCInterface i;
+    
     /** Creates new form Connecter */
-    public Connecter() {
+    public Connecter( ) {        
         initComponents();
-    }        
+    }       
+    
+    public Connecter ( MCInterface iConnect ) {
+        this.i = iConnect;
+    }
+    
+    public String getServerIP () {
+        return jTextField2.getText();        
+    }
+    
+    public String getUserName () {
+        return jTextField3.getText();        
+    }
+    
+    public String getPassword () {
+        return String.valueOf(jPasswordField1.getPassword());
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -51,8 +71,10 @@ public class Connecter extends javax.swing.JFrame {
         jLabel1.setName("jLabel1"); // NOI18N
 
         jLabel2.setText(resourceMap.getString("jLabel2.text")); // NOI18N
+        jLabel2.setEnabled(false);
         jLabel2.setName("jLabel2"); // NOI18N
 
+        jTextField1.setEditable(false);
         jTextField1.setText(resourceMap.getString("jTextField1.text")); // NOI18N
         jTextField1.setName("jTextField1"); // NOI18N
 
@@ -61,6 +83,14 @@ public class Connecter extends javax.swing.JFrame {
 
         jTextField2.setText(resourceMap.getString("jTextField2.text")); // NOI18N
         jTextField2.setName("jTextField2"); // NOI18N
+        jTextField2.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextField2KeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField2KeyReleased(evt);
+            }
+        });
 
         jLabel4.setText(resourceMap.getString("jLabel4.text")); // NOI18N
         jLabel4.setName("jLabel4"); // NOI18N
@@ -72,18 +102,52 @@ public class Connecter extends javax.swing.JFrame {
                 jTextField3ActionPerformed(evt);
             }
         });
+        jTextField3.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextField3KeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField3KeyReleased(evt);
+            }
+        });
 
         jLabel5.setText(resourceMap.getString("jLabel5.text")); // NOI18N
         jLabel5.setName("jLabel5"); // NOI18N
 
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
+        jButton1.setEnabled(false);
         jButton1.setName("jButton1"); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
         jButton2.setName("jButton2"); // NOI18N
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jPasswordField1.setText(resourceMap.getString("jPasswordField1.text")); // NOI18N
         jPasswordField1.setName("jPasswordField1"); // NOI18N
+        jPasswordField1.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                jPasswordField1InputMethodTextChanged(evt);
+            }
+        });
+        jPasswordField1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jPasswordField1KeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jPasswordField1KeyReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -149,6 +213,53 @@ public class Connecter extends javax.swing.JFrame {
 private void jTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField3ActionPerformed
 // TODO add your handling code here:
 }//GEN-LAST:event_jTextField3ActionPerformed
+
+private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    
+    this.dispose();
+}//GEN-LAST:event_jButton1ActionPerformed
+
+private void jPasswordField1InputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_jPasswordField1InputMethodTextChanged
+    
+}//GEN-LAST:event_jPasswordField1InputMethodTextChanged
+
+private void jPasswordField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPasswordField1KeyPressed
+        checkButtonEnable();
+}//GEN-LAST:event_jPasswordField1KeyPressed
+
+private void jPasswordField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jPasswordField1KeyReleased
+    checkButtonEnable();
+}//GEN-LAST:event_jPasswordField1KeyReleased
+
+private void jTextField3KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField3KeyPressed
+    checkButtonEnable();
+}//GEN-LAST:event_jTextField3KeyPressed
+
+private void jTextField3KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField3KeyReleased
+    checkButtonEnable();
+}//GEN-LAST:event_jTextField3KeyReleased
+
+private void jTextField2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyPressed
+    checkButtonEnable();
+}//GEN-LAST:event_jTextField2KeyPressed
+
+private void jTextField2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyReleased
+    checkButtonEnable();
+}//GEN-LAST:event_jTextField2KeyReleased
+
+private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    this.dispose();
+}//GEN-LAST:event_jButton2ActionPerformed
+
+private void checkButtonEnable () {
+    if ( jPasswordField1.getPassword().length != 0 &&
+            !jTextField2.getText().equals("") &&
+            !jTextField3.getText().equals("") ) {
+        jButton1.setEnabled(true);
+    } else {
+        jButton1.setEnabled(false);
+    }
+}
 
     /**
      * @param args the command line arguments

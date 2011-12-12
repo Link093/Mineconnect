@@ -4,7 +4,9 @@
 
 package com.link093.mineconnect;
 
-import java.awt.RenderingHints.Key;
+import com.link093.mineconnect.api.MCInterface;
+import com.link093.mineconnect.api.MCResult;
+import java.awt.event.WindowEvent;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
@@ -13,6 +15,7 @@ import org.jdesktop.application.TaskMonitor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowListener;
 import javax.swing.Timer;
 import javax.swing.Icon;
 import javax.swing.JDialog;
@@ -57,7 +60,7 @@ public class MineconnectclientView extends FrameView {
                 String propertyName = evt.getPropertyName();
                
             }
-        });
+        });                        
     }
 
     @Action
@@ -163,6 +166,11 @@ public class MineconnectclientView extends FrameView {
                 jMenuItem1MouseClicked(evt);
             }
         });
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
         fileMenu.add(jMenuItem1);
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(com.link093.mineconnect.MineconnectclientApp.class).getContext().getActionMap(MineconnectclientView.class, this);
@@ -186,7 +194,7 @@ public class MineconnectclientView extends FrameView {
     }// </editor-fold>//GEN-END:initComponents
 
 private void jMenuItem1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenuItem1MouseClicked
-
+    
 }//GEN-LAST:event_jMenuItem1MouseClicked
 
 private void jTextField2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyPressed
@@ -197,6 +205,26 @@ private void jTextField2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:eve
         jTextField2.setText("");        
     }
 }//GEN-LAST:event_jTextField2KeyPressed
+
+private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    Connecter c = new Connecter ();
+        c.setLocation(this.getFrame().getX() + 25, this.getFrame().getY() +25);
+        c.setVisible(true);    
+        c.addWindowListener(new MCWindowListener(this));
+}//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    public void initInterface ( String serverip, String username, String password ) {
+        writeLine (" [SYS] Trying to connect...");
+        this.theInterface = new MCInterface (serverip);        
+        if (this.theInterface.connect(username, password) == MCResult.RES_SUCCESS)
+            writeLine (" [SYS] Connected.");
+        else
+            writeLine (" [SYS] Can't connect.");                 
+    }
+    
+    public void writeLine (String txt) {                
+        jTextArea1.setText(jTextArea1.getText() + System.getProperty("line.separator") + txt);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -216,4 +244,6 @@ private void jTextField2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:eve
     private int busyIconIndex = 0;
 
     private JDialog aboutBox;
+    
+    private MCInterface theInterface = null;
 }
