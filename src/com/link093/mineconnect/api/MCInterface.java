@@ -44,7 +44,7 @@ public class MCInterface {
             s = new Socket (serverip, 25565);
             
             in = new BufferedReader (new InputStreamReader (s.getInputStream()));
-            out = new PrintWriter (s.getOutputStream(), true);
+            out = new PrintWriter (s.getOutputStream(), true);                        
             
             if ( isConnected() )
                 return MCResult.RES_SUCCESS;
