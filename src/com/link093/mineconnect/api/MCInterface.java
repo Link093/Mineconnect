@@ -41,7 +41,7 @@ public class MCInterface {
             return MCResult.RES_NOTINIT;
         
         try {
-            s = new Socket (serverip, 25565);
+            s = new Socket (serverip, 800);
             
             in = new BufferedReader (new InputStreamReader (s.getInputStream()));
             out = new PrintWriter (s.getOutputStream(), true);                        
