@@ -16,19 +16,28 @@ public class MCWindowListener implements WindowListener {
     private MineconnectclientView prnt;
     
     public MCWindowListener (MineconnectclientView parent) {
+        System.out.println ("Initialized MCWindowListener");
         prnt = parent;
     }
     
     public void windowOpened(WindowEvent we) {        
     }
 
-    public void windowClosing(WindowEvent we) {        
+    public void windowClosing(WindowEvent we) {                
     }
 
-    public void windowClosed(WindowEvent we) {
-        Connecter c = (Connecter) we.getWindow();
+    public void windowClosed(WindowEvent we) {        
+        Connecter c = null;        
+        
+        if ( we.getWindow() instanceof Connecter )
+            c = (Connecter) we.getWindow();        
+        
         if (prnt != null) {
-            prnt.initInterface(c.getServerIP(), c.getUserName(), c.getPassword());            
+            
+            System.out.println (" Connecting to IP: " + c.getServerIP());               
+            System.out.println (" Connecting with Username: " + c.getUserName());
+            System.out.println (" Connecting with Password: " + String.valueOf(c.getPassword()));            
+            prnt.initInterface(c.getServerIP(), c.getUserName(), c.getPassword());                        
         } else
             System.out.println("Warning: Parent in windowClosed() is null!");
     }

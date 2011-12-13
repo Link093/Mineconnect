@@ -26,6 +26,7 @@ public class Connecter extends javax.swing.JFrame {
     }       
     
     public Connecter ( MCInterface iConnect ) {
+        initComponents();
         this.i = iConnect;
     }
     

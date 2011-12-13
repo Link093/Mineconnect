@@ -26,6 +26,8 @@ import javax.swing.JFrame;
  */
 public class MineconnectclientView extends FrameView {
 
+    private String nl = System.getProperty("line.separator");
+    
     public MineconnectclientView(SingleFrameApplication app) {
         super(app);
 
@@ -213,17 +215,36 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
         c.addWindowListener(new MCWindowListener(this));
 }//GEN-LAST:event_jMenuItem1ActionPerformed
 
-    public void initInterface ( String serverip, String username, String password ) {
-        writeLine (" [SYS] Trying to connect...");
-        this.theInterface = new MCInterface (serverip);        
-        if (this.theInterface.connect(username, password) == MCResult.RES_SUCCESS)
-            writeLine (" [SYS] Connected.");
-        else
-            writeLine (" [SYS] Can't connect.");                 
+    public void initInterface ( String sip, String uname, String pwd ) {
+        System.out.println("In initInterface()");
+        writeLine (" [SYS] Trying to connect...");           
+        System.out.println ("Now connecting...");
+        final String serverip = sip;
+        final String username = uname;
+        final String password = pwd;
+        
+        (new Thread () {                       
+            @Override
+            public void run() {
+                theInterface = new MCInterface (serverip);   
+                MCResult res;
+                if ((res = theInterface.connect(username, password)) == MCResult.RES_SUCCESS)
+                    writeLine (" [SYS] Connected.");
+                else
+                    writeLine (" [SYS] Can't connect: " + res.toString());
+            }                 
+        }).start();
     }
     
-    public void writeLine (String txt) {                
-        jTextArea1.setText(jTextArea1.getText() + System.getProperty("line.separator") + txt);
+    public synchronized void writeLine (String txt) {
+        final String thetext = txt;
+        (new Thread () {            
+
+            @Override
+            public void run() {                
+                jTextArea1.append("\n" + thetext);                               
+            }           
+        }).start();        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
