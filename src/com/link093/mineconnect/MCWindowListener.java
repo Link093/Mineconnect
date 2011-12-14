@@ -9,7 +9,7 @@ import java.awt.event.WindowListener;
 
 /**
  *
- * @author passi
+ * @author prosicraft
  */
 public class MCWindowListener implements WindowListener {
 
@@ -27,10 +27,10 @@ public class MCWindowListener implements WindowListener {
     }
 
     public void windowClosed(WindowEvent we) {        
-        Connecter c = null;        
+        MCConnector c = null;        
         
-        if ( we.getWindow() instanceof Connecter )
-            c = (Connecter) we.getWindow();        
+        if ( we.getWindow() instanceof MCConnector )
+            c = (MCConnector) we.getWindow();        
         
         if (prnt != null) {
             
