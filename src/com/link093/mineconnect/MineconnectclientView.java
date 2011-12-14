@@ -202,9 +202,26 @@ private void jMenuItem1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:
 private void jTextField2KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyPressed
       
     
-    if (evt.getKeyCode() == KeyEvent.VK_ENTER) {        
-        jTextArea1.setText(jTextArea1.getText() + System.getProperty("line.separator") + jTextField2.getText());
-        jTextField2.setText("");        
+    if (evt.getKeyCode() == KeyEvent.VK_ENTER && !jTextField2.getText().trim().equals("")) {                
+        if ( !jTextField2.getText().trim().equalsIgnoreCase("/disconnect") ) {
+            writeLine (jTextField2.getText());
+            // send
+            theInterface.send(jTextField2.getText());
+            jTextField2.setText("");
+            return;
+        } else {
+            MCResult res = MCResult.RES_ERROR;
+            jTextField2.setText("");
+            if ( theInterface == null ) {
+                writeLine ( " [SYS] There's no connection to any server.");                
+                return;
+            }
+            if ( (res = theInterface.disconnect()) == MCResult.RES_SUCCESS ) {
+                writeLine (" [SYS] Disconnected from server.");
+            } else {
+                 writeLine (" [SYS] Can't disconnect from server: " + ((res == null) ? "No Error provided." : res.toString()) );
+            }            
+        }
     }
 }//GEN-LAST:event_jTextField2KeyPressed
 
@@ -228,11 +245,38 @@ private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
             public void run() {
                 theInterface = new MCInterface (serverip);   
                 MCResult res;
-                if ((res = theInterface.connect(username, password)) == MCResult.RES_SUCCESS)
-                    writeLine (" [SYS] Connected.");
+                if ((res = theInterface.connect(username, password)) == MCResult.RES_SUCCESS) {
+                    startReadThread();
+                    writeLine (" [SYS] Connected.");                
+                }
                 else
                     writeLine (" [SYS] Can't connect: " + res.toString());
             }                 
+        }).start();
+    }
+    
+    public void startReadThread () {        
+        (new Thread () {
+
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        if ( !theInterface.isConnected() )
+                            break;
+                        
+                        String res = "No response";
+                        res = theInterface.getLine();
+                        writeLine (res);
+                        Thread.sleep(250);                        
+                    } catch (Exception ex) {
+                        writeLine (" [SYS] Can't read from server.");
+                        theInterface.disconnect();
+                        writeLine (" [SYS] Disconnected. ");
+                        break;
+                    }
+                }
+            }
         }).start();
     }
     
