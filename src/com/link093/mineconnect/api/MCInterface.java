@@ -4,17 +4,13 @@
  */
 package com.link093.mineconnect.api;
 
+import com.link093.mineconnect.packet.Packet1Login;
 import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
-import net.minecraft.server.Packet;
-import net.minecraft.server.Packet1Login;
 
 /**
  *
@@ -41,7 +37,7 @@ public class MCInterface {
     
     
     // Connect to the server
-    public MCResult connect(String username, String password) {
+    public MCResult connect() {
         
         if ( serverip.equals("") )
             return MCResult.RES_NOTINIT;
@@ -67,6 +63,46 @@ public class MCInterface {
             return MCResult.RES_ERROR;
         }                        
     }    
+    
+    public MCResult login (String username, String password) {
+        
+        String address = "";
+        
+        try {
+            address = InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception ex) {
+            System.out.println ("Can't get IP adress");
+        }
+        
+        Packet1Login p = new Packet1Login(address, username, password);
+        
+        p.send(outp);             
+        
+        long tPre = System.currentTimeMillis();        
+        while ( ( System.currentTimeMillis() - tPre ) < 5000 ) {
+            try {
+                if ( in.ready() )
+                    break;
+            } catch (IOException ex) {
+                System.out.println ("Can't establish ready().");
+                return MCResult.RES_ERROR;
+            }
+        }        
+        
+        try {
+            if ( !in.ready() )
+                return MCResult.RES_ERROR;
+        } catch (IOException ex) {
+            System.out.println ("Can't establish ready() (lastAttempt)");
+        }
+        
+        if ( p.getResponse(this.readNextPacket(), this) )
+            return MCResult.RES_SUCCESS;
+        else
+            return MCResult.RES_NOACCESS;
+    }
+    
+    
     
     public boolean isConnected () {
         return ( in != null && outp != null );
@@ -121,39 +157,56 @@ public class MCInterface {
         }
     }
     
-    public String getLine () {
+    public int readNextPacket () {
+        int res = 0;
+        if ( (res = getInt ()) == -1 ) {
+            System.out.println ("There is no more packet");
+        }
+        return res;
+    }
+    
+    public String getString () {
         if ( !isConnected() )        
             return "[SYS] Connection to server not established.";
         
         try {
             
-            long tPre = System.currentTimeMillis();            
-            while ( !in.ready() ) {                
-                try {
-                    Thread.sleep(1);
-                    if ( (System.currentTimeMillis() - tPre) > 5000 )
-                        throw new InterruptedException ("Timeout");
-                } catch (InterruptedException ex) {                           
-                    return " [SYS] Read timed out.";                    
-                }                
-            }            
-            
-            Packet p = Packet.a(new DataInputStream ( new InputStream () {
-                @Override
-                public int read() throws IOException {
-                    return in.read();
-                }                               
-            } ), false);
-            
-            if ( p == null )
-                return "(server) Null";
-            else
-                return p.toString();            
+            //long tPre = System.currentTimeMillis();            
+            if ( in.ready() ) {
+                                
+                char[] cbuf = new char[200];                                
+                in.read(cbuf);                
+                
+                return new String (cbuf);
+                
+            }                                                                                                      
+            return "";
             
         } catch (IOException ioex) {
-            return " [SYS] Error while reading message.";
+            return " [SYS] Error while reading String.";
         }
         
-    }        
+    }         
+    
+    public int getInt () {
+        if ( !isConnected() )        
+            return -1;
+        
+        try {
+            
+            //long tPre = System.currentTimeMillis();            
+            if ( in.ready() ) {
+                                
+                int res = in.read();                                          
+                return res;
+                
+            }                                                                                                      
+            return -1;
+            
+        } catch (IOException ioex) {
+            return -1;
+        }
+        
+    }
     
 }

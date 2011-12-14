@@ -30,7 +30,10 @@ public class MCWindowListener implements WindowListener {
         MCConnector c = null;        
         
         if ( we.getWindow() instanceof MCConnector )
-            c = (MCConnector) we.getWindow();        
+            c = (MCConnector) we.getWindow();    
+        
+        if ( !c.clickedConnect )    // normal window-close
+            return;
         
         if (prnt != null) {
             

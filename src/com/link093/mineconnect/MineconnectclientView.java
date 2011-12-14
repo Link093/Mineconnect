@@ -8,7 +8,6 @@ import com.link093.mineconnect.api.MCInterface;
 import com.link093.mineconnect.api.MCResult;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import javax.swing.JButton;
@@ -84,9 +83,16 @@ public class MineconnectclientView extends JFrame implements Runnable {
             public void run() {
                 theInterface = new MCInterface (serverip);   
                 MCResult res;
-                if ((res = theInterface.connect(username, password)) == MCResult.RES_SUCCESS) {
+                if ((res = theInterface.connect()) == MCResult.RES_SUCCESS) {
                     startReadThread();
-                    writeLine (" [SYS] Connected.");                
+                    writeLine (" [SYS] Connected.");
+                    writeLine (" [SYS] Logging in... ");
+                                       
+                    if ( (res = theInterface.login(username, password)) == MCResult.RES_SUCCESS )
+                        writeLine (" [SYS] Logged in.");
+                    else
+                        writeLine (" [SYS] Can't login: " + String.valueOf(res));
+                    
                 }
                 else
                     writeLine (" [SYS] Can't connect: " + res.toString());
@@ -105,16 +111,13 @@ public class MineconnectclientView extends JFrame implements Runnable {
                     } catch (InterruptedException ex) {                        
                     }
                     
-                    if ( theInterface == null )
+                    if ( theInterface == null || !theInterface.isConnected() )
                         continue;
                     
-                    try {
-                        if ( !theInterface.isConnected() )
-                            break;
-                        
-                        String res = "No response";
-                        res = theInterface.getLine();
-                        writeLine (res);
+                    try {                                                                            
+                        int interfaceID = theInterface.readNextPacket();                                                
+                        if ( interfaceID != -1 )
+                            writeLine ("Got packet with ID: " + String.valueOf(interfaceID));
                         Thread.sleep(250);                        
                     } catch (Exception ex) {
                         writeLine (" [SYS] Can't read from server.");
