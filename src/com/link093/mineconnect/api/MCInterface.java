@@ -5,6 +5,8 @@
 package com.link093.mineconnect.api;
 
 import com.link093.mineconnect.packet.Packet1Login;
+import com.link093.mineconnect.packet.Packet2Handshake;
+import com.link093.mineconnect.packet.Packet3Chat;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,7 +28,7 @@ public class MCInterface {
     public MCInterface ( String serverip ) {
         this.serverip = serverip;
     }
-
+    
     public void setServerip(String serverip) {
         this.serverip = serverip;
     }
@@ -66,17 +68,24 @@ public class MCInterface {
     
     public MCResult login (String username, String password) {
         
-        String address = "";
+        int address = 0;
         
         try {
-            address = InetAddress.getLocalHost().getHostAddress();
+            
+            String[] addrArray = InetAddress.getLocalHost().getHostAddress().split("\\.");            
+
+            for (int i=0;i<addrArray.length;i++) {
+                int power = 3-i;
+                address += ((Integer.parseInt(addrArray[i])%256 * Math.pow(256,power)));
+            }                        
+                        
         } catch (Exception ex) {
             System.out.println ("Can't get IP adress");
         }
         
         Packet1Login p = new Packet1Login(address, username, password);
         
-        p.send(outp);             
+        p.send(outp);          
         
         long tPre = System.currentTimeMillis();        
         while ( ( System.currentTimeMillis() - tPre ) < 5000 ) {
@@ -96,7 +105,11 @@ public class MCInterface {
             System.out.println ("Can't establish ready() (lastAttempt)");
         }
         
-        if ( p.getResponse(this.readNextPacket(), this) )
+        Packet2Handshake ph = new Packet2Handshake(false);                
+        
+        ph.eval(readNextPacket(), in);
+        
+        if ( ph.hasAccess() )
             return MCResult.RES_SUCCESS;
         else
             return MCResult.RES_NOACCESS;
@@ -133,34 +146,21 @@ public class MCInterface {
         if ( !isConnected() )
             return MCResult.RES_NOTINIT;
         
-        System.out.println ("Attempting to send message '" + txt + "' to server: '" + serverip + "'");
+        System.out.println ("Attempting to send message '" + txt + "' to server: '" + serverip + "'");                
         
-        try {
-        
-            outp.print(txt);            
+            Packet3Chat pc = new Packet3Chat(txt);
             
-            if ( outp.checkError() )
-                throw new IOException ("Something went wrong running println ()");
-            
-            outp.flush();                        
-            
-            if ( outp.checkError() )
-                throw new IOException ("Something went wrong running flush ()");
+            pc.send(outp);                                                                       
             
             System.out.println ("Sent message.");
             
-            return MCResult.RES_SUCCESS;
-        } catch (IOException ioex) {
-            System.out.println ("Can't send message '" + txt + "' to server: '" + serverip + "':");
-            ioex.printStackTrace();
-            return MCResult.RES_ERROR;
-        }
+            return MCResult.RES_SUCCESS;        
     }
     
     public int readNextPacket () {
         int res = 0;
         if ( (res = getInt ()) == -1 ) {
-            System.out.println ("There is no more packet");
+            //System.out.println ("There is no more packet");
         }
         return res;
     }
@@ -174,7 +174,7 @@ public class MCInterface {
             //long tPre = System.currentTimeMillis();            
             if ( in.ready() ) {
                                 
-                char[] cbuf = new char[200];                                
+                char[] cbuf = new char[120];                                
                 in.read(cbuf);                
                 
                 return new String (cbuf);
@@ -207,6 +207,10 @@ public class MCInterface {
             return -1;
         }
         
+    }
+    
+    public BufferedReader getIn () {
+        return in;
     }
     
 }

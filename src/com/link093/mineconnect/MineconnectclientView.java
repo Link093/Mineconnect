@@ -6,6 +6,7 @@ package com.link093.mineconnect;
 
 import com.link093.mineconnect.api.MCInterface;
 import com.link093.mineconnect.api.MCResult;
+import com.link093.mineconnect.packet.Packet3Chat;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -116,8 +117,13 @@ public class MineconnectclientView extends JFrame implements Runnable {
                     
                     try {                                                                            
                         int interfaceID = theInterface.readNextPacket();                                                
-                        if ( interfaceID != -1 )
-                            writeLine ("Got packet with ID: " + String.valueOf(interfaceID));
+                        
+                        Packet3Chat pc = new Packet3Chat();
+                                
+                        if ( pc.eval(interfaceID, theInterface.getIn()) ) {
+                            writeLine ( "Server: " + pc.getMessage() );
+                        }
+                        
                         Thread.sleep(250);                        
                     } catch (Exception ex) {
                         writeLine (" [SYS] Can't read from server.");
